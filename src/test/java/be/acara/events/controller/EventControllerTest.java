@@ -249,7 +249,8 @@ class EventControllerTest {
     void editEvent() {
         Event event = firstEvent();
         EventDto eventDto = map(firstEvent());
-        
+
+        when(eventService.findById(anyLong())).thenReturn(firstEvent());
         when(eventService.editEvent(eventDto.getId(), event)).thenReturn(event);
         when(eventMapper.eventDtoToEvent(eventDto)).thenReturn(event);
         when(eventMapper.eventToEventDto(event)).thenReturn(eventDto);

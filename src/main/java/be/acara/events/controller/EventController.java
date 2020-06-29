@@ -145,8 +145,14 @@ public class EventController {
     @PutMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<EventDto> editEvent(@PathVariable("id") Long id, @RequestBody @Valid EventDto eventDto) {
-        Event event = eventService.editEvent(id, eventMapper.eventDtoToEvent(eventDto));
-        return ResponseEntity.ok(eventMapper.eventToEventDto(event));
+        Event eventToEdit = eventMapper.eventDtoToEvent(eventDto);
+        Event event = eventService.findById(id);
+        eventToEdit.setUsersThatLikeThisEvent(event.getUsersThatLikeThisEvent());
+        if(eventDto.isLiked()) {
+            eventToEdit.setAmountOfLikes(event.getAmountOfLikes()-1);
+            eventToEdit.addUserThatLikesTheEvent(userService.getCurrentUser());
+        }
+        return ResponseEntity.ok(eventMapper.eventToEventDto(eventService.editEvent(id, eventToEdit)));
     }
     
     /**
